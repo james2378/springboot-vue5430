@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.KechengchengjiDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.entity.KechengchengjiEntity" id="kechengchengjiMap">
+        <result property="kechengmingcheng" column="kechengmingcheng"/>
+        <result property="xuehao" column="xuehao"/>
+        <result property="xingming" column="xingming"/>
+        <result property="banji" column="banji"/>
+        <result property="fenshu" column="fenshu"/>
+        <result property="chengji" column="chengji"/>
+        <result property="fabushijian" column="fabushijian"/>
+        <result property="gonghao" column="gonghao"/>
+        <result property="jiaoshixingming" column="jiaoshixingming"/>
+        <result property="crossuserid" column="crossuserid"/>
+        <result property="crossrefid" column="crossrefid"/>
+    </resultMap>
+
+	<select id="selectListVO"
+		resultType="com.entity.vo.KechengchengjiVO" >
+		SELECT * FROM kechengchengji  kechengchengji         
+        <where> 1=1 ${ew.sqlSegment}</where>
+	</select>
+	
+	<select id="selectVO"
+		resultType="com.entity.vo.KechengchengjiVO" >
+		SELECT  kechengchengji.* FROM kechengchengji  kechengchengji 	
+ 		<where> 1=1 ${ew.sqlSegment}</where>
+	</select>
+
+    <select id="selectListView"
+		resultType="com.entity.view.KechengchengjiView" >
+
+		SELECT  kechengchengji.* FROM kechengchengji  kechengchengji 	        
+        <where> 1=1 ${ew.sqlSegment}</where>
+	</select>
+	
+	<select id="selectView"
+		resultType="com.entity.view.KechengchengjiView" >
+		SELECT * FROM kechengchengji  kechengchengji <where> 1=1 ${ew.sqlSegment}</where>
+	</select>
+	
+
+    <select id="selectValue" resultType="map" >
+        SELECT ${params.xColumn}, sum(${params.yColumn}) total FROM kechengchengji
+        <where> 1=1 ${ew.sqlSegment}</where>
+        group by ${params.xColumn}
+        limit 10
+    </select>
+
+    <select id="selectTimeStatValue" resultType="map" >
+        <if test = 'params.timeStatType == "日"'>
+                SELECT DATE_FORMAT(${params.xColumn},'%Y-%m-%d') ${params.xColumn}, sum(${params.yColumn}) total FROM kechengchengji
+                <where> 1=1 ${ew.sqlSegment}</where>
+                group by DATE_FORMAT(${params.xColumn},'%Y-%m-%d')
+        </if>
+        <if test = 'params.timeStatType == "月"'>
+                SELECT DATE_FORMAT(${params.xColumn},'%Y-%m') ${params.xColumn}, sum(${params.yColumn}) total FROM kechengchengji
+                <where> 1=1 ${ew.sqlSegment}</where>
+                group by DATE_FORMAT(${params.xColumn},'%Y-%m')
+        </if>
+        <if test = 'params.timeStatType == "年"'>
+                SELECT DATE_FORMAT(${params.xColumn},'%Y') ${params.xColumn}, sum(${params.yColumn}) total FROM kechengchengji
+                <where> 1=1 ${ew.sqlSegment}</where>
+                group by DATE_FORMAT(${params.xColumn},'%Y')
+        </if>
+    </select>
+
+    <select id="selectGroup" resultType="map" >
+        SELECT ${params.column} , count(1) total FROM kechengchengji
+        <where> 1=1 ${ew.sqlSegment}</where>
+        group by ${params.column}
+        limit 10
+    </select>
+
+    <select id="fenshuSectionStat" resultType="map" >
+        SELECT '不及格' as fenshu,case when t.不及格 is null then 0 else t.不及格 end total
+        from
+        (select
+        sum(case when fenshu &lt;= 59 then 1 else 0 end) as 不及格,        sum(case when fenshu >= 60 and fenshu &lt;= 79 then 1 else 0 end) as 及格,        sum(case when fenshu >= 80 and fenshu &lt;= 89 then 1 else 0 end) as 良好,        sum(case when fenshu >= 90 then 1 else 0 end) as 优秀        from kechengchengji
+        <where> 1=1 ${ew.sqlSegment}</where>
+        ) t
+        union all
+        SELECT '及格' as fenshu,case when t.及格 is null then 0 else t.及格 end total
+        from
+        (select
+        sum(case when fenshu &lt;= 59 then 1 else 0 end) as 不及格,        sum(case when fenshu >= 60 and fenshu &lt;= 79 then 1 else 0 end) as 及格,        sum(case when fenshu >= 80 and fenshu &lt;= 89 then 1 else 0 end) as 良好,        sum(case when fenshu >= 90 then 1 else 0 end) as 优秀        from kechengchengji
+        <where> 1=1 ${ew.sqlSegment}</where>
+        ) t
+        union all
+        SELECT '良好' as fenshu,case when t.良好 is null then 0 else t.良好 end total
+        from
+        (select
+        sum(case when fenshu &lt;= 59 then 1 else 0 end) as 不及格,        sum(case when fenshu >= 60 and fenshu &lt;= 79 then 1 else 0 end) as 及格,        sum(case when fenshu >= 80 and fenshu &lt;= 89 then 1 else 0 end) as 良好,        sum(case when fenshu >= 90 then 1 else 0 end) as 优秀        from kechengchengji
+        <where> 1=1 ${ew.sqlSegment}</where>
+        ) t
+        union all
+        SELECT '优秀' as fenshu,case when t.优秀 is null then 0 else t.优秀 end total
+        from
+        (select
+        sum(case when fenshu &lt;= 59 then 1 else 0 end) as 不及格,        sum(case when fenshu >= 60 and fenshu &lt;= 79 then 1 else 0 end) as 及格,        sum(case when fenshu >= 80 and fenshu &lt;= 89 then 1 else 0 end) as 良好,        sum(case when fenshu >= 90 then 1 else 0 end) as 优秀        from kechengchengji
+        <where> 1=1 ${ew.sqlSegment}</where>
+        ) t
+    </select>
+
+
+</mapper>
